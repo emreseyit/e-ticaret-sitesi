@@ -1,15 +1,26 @@
 <template>
-    <div>
-        <form class="search-container">
-            <input type="text" id="search-bar" v-model="filter" placeholder="Aradığınız ürünü yazınız...">
-            <img class="search-icon" src="http://www.endlessicons.com/wp-content/uploads/2012/12/search-icon.png">
-        </form>
-    </div>
-    
-    <product-card 
-        :products="products"
-        @addToCart="addToCart"
-    />
+  <div class="home-page">
+    <header class="header">
+      <h1 class="site-title">Indie Market</h1>
+      <form class="search-container">
+      <input type="text" id="search-bar" v-model="filter" placeholder="Search for products...">
+      <button type="submit" class="search-button">
+        <i class="fas fa-search"></i>
+      </button>
+      </form>
+    </header>
+
+    <main class="main-content">
+      <div class="product-grid">
+        <product-card
+          v-for="product in filteredProducts"
+          :key="product.Id"
+          :product="product"
+          @add-to-cart="addToCart"
+        />
+      </div>
+    </main>
+  </div>
 </template>
 
 <script>
@@ -18,81 +29,113 @@ import { useStore } from 'vuex'
 import ProductCard from '../components/ProductCard.vue'
 
 export default {
-    components: {
-        ProductCard,
-    },
-    setup() {
-        const store = useStore()
-        const filter = ref("")
+  components: {
+    ProductCard,
+  },
+  setup() {
+    const store = useStore()
+    const filter = ref("")
 
-        onMounted(async () => {
-            await store.dispatch('products/fetchProducts')
-        })
+    onMounted(async () => {
+      await store.dispatch('products/fetchProducts')
+    })
 
-        const products = computed(() => store.state.products.all.filter(item => {
-            const query = item.Id + item.Title + item.Maker + item.Description
-            return query.toLowerCase().includes(filter.value.toLowerCase())
-        }))
+    const filteredProducts = computed(() => store.state.products.all.filter(item => {
+      const query = item.Id + item.Title + item.Maker + item.Description
+      return query.toLowerCase().includes(filter.value.toLowerCase())
+    }))
 
-        const addToCart = (id) => {
-            store.dispatch('products/addToCart', { id })
-        }
+    const addToCart = (id) => {
+      store.dispatch('products/addToCart', { id })
+    }
 
-        return {
-            products,
-            addToCart,
-            filter,
-        }
-    },
-
+    return {
+      filteredProducts,
+      addToCart,
+      filter,
+    }
+  },
 }
 </script>
 
 <style scoped>
+.home-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.site-title {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
 .search-container {
-    min-width: 490px;
-    max-width: 40%;
-    display: block;
-    margin: 0 auto;
+  display: flex;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-input#search-bar {
-    margin: 0 auto;
-    width: 100%;
-    height: 45px;
-    padding: 0 20px;
-    font-size: 1rem;
-    border: 1px solid #D0CFCE;
-    outline: none;
+#search-bar {
+  flex-grow: 1;
+  height: 45px;
+  padding: 0 1rem;
+  font-size: 1rem;
+  border: 1px solid #D0CFCE;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  outline: none;
 }
 
-input#search-bar:focus {
-    border: 1px solid black;
-    transition: 0.35s ease;
-    color: black;
+#search-bar:focus {
+  border-color: #0056b3;
 }
 
-input#search-bar:focus::-webkit-input-placeholder {
-    transition: opacity 0.45s ease;
-    opacity: 0;
+.search-button {
+  width: 45px;
+  height: 45px;
+  background-color: #0056b3;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-input#search-bar:focus::-moz-placeholder {
-    transition: opacity 0.45s ease;
-    opacity: 0;
+.search-button:hover {
+  background-color: #003d82;
 }
 
-input#search-bar:focus:-ms-placeholder {
-    transition: opacity 0.45s ease;
-    opacity: 0;
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
 }
 
-.search-icon {
-    position: relative;
-    float: right;
-    width: 75px;
-    height: 75px;
-    top: -62px;
-    right: -10px;
+@media (max-width: 768px) {
+  .home-page {
+    padding: 1rem;
+  }
+
+  .site-title {
+    font-size: 2rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
