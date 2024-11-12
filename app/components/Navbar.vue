@@ -1,74 +1,82 @@
 <template>
-    <div class="nav-wrapper">
-        <div class="nav-logo">
-            <router-link to='/'>
-                <h1>T-STORE</h1>
-            </router-link>
-        </div>
-        <nav>
-            <ul class="nav-list">
-                <li>
-                    <router-link to='/'>Home</router-link>
-                </li>
-                <li>
-                    <router-link to='/cart'>Cart</router-link>
-                </li>
-            </ul>
+    <header class="navbar">
+      <div class="navbar-container">
+        <router-link to="/" class="navbar-logo">
+          <h1>T-STORE</h1>
+        </router-link>
+        <nav class="navbar-menu">
+          <router-link to="/" class="navbar-link">Home</router-link>
+          <router-link to="/cart" class="navbar-link">Cart</router-link>
         </nav>
-    </div>
+      </div>
+    </header>
 </template>
 
 <script>
 export default {
-
+    name: 'Navbar'
 }
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css?family=Montserrat:400,400i,700");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
-.nav-wrapper {
+.navbar {
+    background-color: #1a1a1a;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-container {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    font-family: Montserrat, sans-serif;
-    background-color: #212121;
-    padding: 20px 30px;
-    color: white;
-    margin-bottom: 1em;
-    border-bottom: #424242 solid 1px;
+    align-items: center;
+    padding: 1rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.nav-logo {
-    font-weight: bold;
-    font-size: 1.1em;
-    color: white;
+.navbar-logo {
     text-decoration: none;
 }
 
-.nav-list {
-    list-style: none;
+.navbar-logo h1 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #ffffff;
+    margin: 0;
 }
 
-.nav-list li {
-    display: inline-block;
-    margin: 0 1.5em;
-    margin-left: 1em;
+.navbar-menu {
+    display: flex;
+    gap: 1.5rem;
 }
 
-.nav-list a {
-    color: #9e9e9e;
+.navbar-link {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    color: #b0b0b0;
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, transform 0.3s ease;
 }
 
-.nav-list a:hover {
-    color: white;
-    font-weight: bold;
-    font-size: 1.1em;
+.navbar-link:hover {
+    color: #ffffff;
+    transform: translateY(-2px);
 }
 
-a{
-    color:white;
+@media (max-width: 768px) {
+    .navbar-container {
+      flex-direction: column;
+      padding: 1rem;
+    }
+
+    .navbar-menu {
+      margin-top: 1rem;
+    }
 }
 </style>

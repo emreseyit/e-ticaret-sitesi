@@ -1,34 +1,29 @@
 <template>
-    <div id="app">
-        <div class="wrapper">
-            <card class="card" v-for="product in products" :key="product.id">
-                <template v-slot:content>
-                    <router-link :to="`/products/${product.Id}`">
-                        <img :src="product.img">
-                    </router-link>
-                </template>
-
-                <template v-slot:title>
-                    <router-link :to="`/products/${product.Id}`">
-                        {{ product.Title }}
-                    </router-link>
-                </template>
-
-                <template v-slot:rating>
-                    <div v-if="product.Ratings">
-                        {{ (product.Ratings.reduce((a, b) => a + b) / product.Ratings.length).toFixed(2) }} puan
-                        <small>({{ product.Ratings.length }} değerlendirme)</small>
-                    </div>
-                </template>
-
-                <template v-slot:price>
-                    {{ product.price.amount.toFixed(2) }} {{ product.price.currency }}
-                </template>
-
-                <template v-slot:button>
-                    <button-add-to-cart @click="addToCart(product.Id)" />
-                </template>
-            </card>
+    <div class="product-card">
+        <div class="product-image">
+            <router-link :to="`/products/${product.Id}`">
+                <img :src="product.img" :alt="product.Title">
+            </router-link>
+        </div>
+        <div class="product-info">
+            <h3 class="product-title">
+                <router-link :to="`/products/${product.Id}`">
+                    {{ product.Title }}
+                </router-link>
+            </h3>
+            <div v-if="product.Ratings" class="product-rating">
+                <span class="rating-stars">
+                    ★★★★★
+                </span>
+                <span class="rating-score">
+                    {{ (product.Ratings.reduce((a, b) => a + b) / product.Ratings.length).toFixed(1) }}
+                </span>
+                <span class="rating-count">({{ product.Ratings.length }})</span>
+            </div>
+            <div class="product-price">
+                {{ product.price.amount.toFixed(2) }} {{ product.price.currency }}
+            </div>
+            <button-add-to-cart @click="addToCart(product.Id)" class="add-to-cart-btn" />
         </div>
     </div>
 </template>
@@ -42,8 +37,7 @@ export default {
         ButtonAddToCart,
     },
     props: {
-        products: {
-            type: Array,
+        product: {
             required: true,
         },
 
@@ -60,58 +54,104 @@ export default {
 </script>
 
 <style scoped>
-* {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-around;
-    flex-direction: column;
-    margin-top: 16px;
-    margin-bottom: 16px;
-    width: 100%;
-}
-
-#app {
-    display: flex;
-    flex-direction: row;
-}
-
-#app .wrapper {
-    display: flex;
-    max-width: 19%;
-    flex-wrap: wrap;
-    padding-top: 12px;
-}
-
-#app .card {
-    box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px;
-    margin: 12px;
-    transition: .15s all ease-in-out;
-    border-radius: 7px;
-    background-color: rgb(236, 236, 236);
-}
-
-#app .card:hover {
-    transform: scale(1.1);
-}
-
-#app .card a {
-    text-decoration: none;
-    padding: .5em;
-    color: #03A9F4;
-    font-size: 1.5em;
+.product-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    align-items: center;
-}
-
-#app .card a img {
     height: 100%;
-    width: 100%;
-    margin: 0;
 }
 
-#app .card a small {
-    padding: .1em;
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+    position: relative;
+    padding-top: 75%;
+    overflow: hidden;
+}
+
+.product-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-image:hover img {
+    transform: scale(1.05);
+}
+
+.product-info {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.product-title {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.product-title a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.product-title a:hover {
+    color: #0056b3;
+}
+
+.product-rating {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.rating-stars {
+    color: #ffc107;
+    margin-right: 0.25rem;
+}
+
+.rating-score {
+    font-weight: 600;
+    margin-right: 0.25rem;
+}
+
+.rating-count {
+    color: #6c757d;
+}
+
+.product-price {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #28a745;
+    margin-bottom: 0.75rem;
+}
+
+.add-to-cart-btn {
+    margin-top: auto;
+}
+
+@media (max-width: 768px) {
+    .product-title {
+        font-size: 0.875rem;
+    }
+
+    .product-rating, .product-price {
+        font-size: 0.8125rem;
+    }
 }
 </style>

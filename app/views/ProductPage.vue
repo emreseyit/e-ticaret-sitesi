@@ -1,30 +1,22 @@
 <template>
-    <div class="wrapper">
-        <div class="grid product">
-            <div class="column-xs-12 column-md-7">
-                <div class="product-gallery">
-                    <img :src="product.img">
-
-                </div>
-            </div>
-            <div class="column-xs-12 column-md-5 title-info">
-                <div class="title">
-                    <h1>{{ product.Title }}</h1>
-                    <h2>{{ product.price.amount }} {{ product.price.currency }}</h2>
-                    <div v-if="product.Ratings">
-                        {{ (product.Ratings.reduce((a, b) => a + b) / product.Ratings.length).toFixed(2) }} puan
-                        <small>( {{ product.Ratings.length }} değerlendirme )</small>
-                    </div>
-                </div>
-                <div class="description-info">
-                    <div class="description">
-                        <p>{{ product.Description }}</p>
-                    </div>
-                    <div class="seller"><small> Üretici: {{ product.Maker }}</small></div>
-                </div>
-                <button-add-to-cart @click='addToCart' />
-            </div>
+    <div class="product-page">
+      <div class="product-container">
+        <div class="product-image">
+          <img :src="product.img" :alt="product.Title">
         </div>
+        <div class="product-details">
+          <h1 class="product-title">{{ product.Title }}</h1>
+          <h2 class="product-price">{{ product.price.amount }} {{ product.price.currency }}</h2>
+          <div v-if="product.Ratings" class="product-rating">
+            <span class="rating-score">{{ averageRating }} </span>
+            <span class="rating-stars">★★★★★</span>
+            <span class="rating-count">({{ product.Ratings.length }} reviews)</span>
+          </div>
+          <p class="product-description">{{ product.Description }}</p>
+          <p class="product-maker">Manufacturer: {{ product.Maker }}</p>
+          <button-add-to-cart @click='addToCart' class="add-to-cart-button" />
+        </div>
+      </div>
     </div>
 </template>
 
@@ -36,140 +28,140 @@ import ButtonAddToCart from '../components/ButtonAddToCart.vue'
 
 export default {
     components: {
-        ButtonAddToCart
+      ButtonAddToCart
     },
     setup() {
-        const route = useRoute()
-        const store = useStore()
-        const id = route.params.id
-        onBeforeMount(() => {
-            store.dispatch('products/fetchProduct', { id })
-        })
-        const product = computed(() => store.state.products.specificProduct)
-
-        const addToCart = () => {
-            store.dispatch('products/addToCart', { id })
+      const route = useRoute()
+      const store = useStore()
+      const id = route.params.id
+    
+      onBeforeMount(() => {
+        store.dispatch('products/fetchProduct', { id })
+      })
+    
+      const product = computed(() => store.state.products.specificProduct)
+    
+      const averageRating = computed(() => {
+        if (product.value.Ratings && product.value.Ratings.length > 0) {
+          return (product.value.Ratings.reduce((a, b) => a + b) / product.value.Ratings.length).toFixed(1)
         }
+        return 'N/A'
+      })
 
+      const addToCart = () => {
+        store.dispatch('products/addToCart', { id })
+      }
 
-        return {
-            product,
-            addToCart
-        }
+      return {
+        product,
+        addToCart,
+        averageRating
+      }
     }
 }
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css?family=Pontano+Sans');
-
-* {
-    box-sizing: border-box;
-    display: flex;
+.product-page {
+    font-family: 'Arial', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
 }
 
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Pontano Sans', sans-serif;
-    font-size: 1.125rem;
-    line-height: 1.5;
-    margin: 0;
-    padding: 0;
-    color: black;
-    background: white;
-    text-rendering: optimizeLegibility;
-}
-
-.wrapper {
+.product-container {
     display: flex;
     flex-wrap: wrap;
-    flex-direction: column;
-    margin: auto;
-    padding: 0 1rem;
-    max-width: 75rem;
-    min-width: 100%;
+    gap: 2rem;
 }
 
-.title-info {
-    flex-direction: column;
-    justify-content: space-between;
+.product-image {
+    flex: 1 1 400px;
 }
 
-.title-info .title {
-    display: block;
-
-}
-
-.description-info {
-    display: block;
-}
-
-h1,
-h2,
-h3,
-h4 {
-    color: #333;
-    font-weight: normal;
-    margin: 1.75rem 0 1rem 0;
-}
-
-h1 {
-    font-size: 2.5rem;
-    margin: 0;
-}
-
-h2 {
-    font-size: 2.125rem;
-    margin: 20px 0 0 0;
-}
-
-h3 {
-    font-size: 2rem;
-}
-
-h4 {
-    font-size: 1.5rem;
-    margin: 1rem 0 0.5rem 0;
-}
-
-section {
-    display: block;
-}
-
-img {
-    width: 1100px;
+.product-image img {
+    width: 100%;
     height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.description {
-    border-top: 0.0625rem solid #e3dddd;
-    margin: 2rem 0;
-    padding: 1rem 0 0 0;
+.product-details {
+    flex: 1 1 400px;
 }
 
-.grid>[class*="column-"] {
-    padding: 1rem;
+.product-title {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem;
+    color: #333;
 }
 
-.grid.menu,
-.grid.product {
-    border-bottom: 0.0625rem solid #e3dddd;
+.product-price {
+    font-size: 2rem;
+    color: #e44d26;
+    margin: 0 0 1rem;
 }
 
-.grid.menu>[class*="column-"] {
-    padding: 0.5rem 1rem 0.5rem 1rem;
+.product-rating {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
 }
 
-.grid.product {
-    padding: 0 0 1.5rem 0;
+.rating-score {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-right: 0.5rem;
 }
 
-.grid.second-nav>[class*="column-"] {
+.rating-stars {
+    color: #ffd700;
+    margin-right: 0.5rem;
+}
 
-    padding: 0.5rem 1rem;
+.rating-count {
+    color: #666;
+}
+
+.product-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #444;
+    margin-bottom: 1rem;
+}
+
+.product-maker {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.add-to-cart-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.add-to-cart-button:hover {
+    background-color: #45a049;
+}
+
+@media (max-width: 768px) {
+    .product-page {
+      padding: 1rem;
+    }
+  
+    .product-title {
+      font-size: 2rem;
+    }
+  
+    .product-price {
+      font-size: 1.5rem;
+    }
 }
 </style>
